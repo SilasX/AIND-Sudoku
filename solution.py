@@ -48,8 +48,35 @@ def naked_twins(values):
     and because it is simpler (since the reduce_puzzle function already calls this
     strategy repeatedly).
     """
-    # TODO: Implement this function!
-    raise NotImplementedError
+    # In every unit, build up a dictionary mapping every twin pair string
+    # (e.g. "25") back to the two boxes in the pair (e.g. ["A1", "A9"])
+    # Then, iterate over the entire unit and remove those choice
+    # from every remember of the unit except the twin pair
+    for unit in unitlist:
+        # map twin pair string to list of boxes in twin pair
+        twin_pairs = {}
+        for box in unit:
+            options = values[box]
+            if len(options) != 2:
+                continue
+            if options in twin_pairs:
+                # Append it to the list of boxes
+                twin_pairs[options].append(box)
+            else:
+                # Start a single element list
+                twin_pairs[options] = [box]
+        for twin_pair_str, twin_pair_boxes in twin_pairs.items():
+            # Can't do anythig if not exactly two
+            if len(twin_pair_boxes) != 2:
+                continue
+            # Remove from rest of unit
+            for box in unit:
+                if box in twin_pair_boxes:
+                    continue
+                values[box] = "".join([
+                    x for x in values[box] if x not in twin_pair_str
+                ])
+    return values
 
 
 def eliminate(values):
@@ -141,6 +168,7 @@ def reduce_puzzle(values):
         # Reduce by use of Eliminate and Only Choice strategy
         values = eliminate(values)
         values = only_choice(values)
+        values = naked_twins(values)
 
         # Check how many boxes have a determined value, to compare
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
