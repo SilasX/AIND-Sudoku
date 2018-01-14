@@ -10,7 +10,11 @@ square_units = [
 ]
 unitlist = row_units + column_units + square_units
 
-diag_units = [rows[i] + cols[i] for i in xrange(len(rows))]
+diag_units = [
+    [rows[i] + cols[i] for i in range(len(rows))],
+    [rows[len(rows) - 1 - i] + cols[i] for i in range(len(rows))],
+]
+
 unitlist = unitlist + diag_units
 
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
