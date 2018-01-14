@@ -76,6 +76,11 @@ class TestNakedTwins(unittest.TestCase):
         self.assertTrue(solution.naked_twins(self.before_naked_twins_1) in self.possible_solutions_1,
                         "Your naked_twins function produced an unexpected board.")
 
+    def test_naked_tuples(self):
+        self.assertTrue(solution.naked_tuples(self.before_naked_twins_1) in self.possible_solutions_1,
+                        "Your naked_tuples function produced an unexpected board.")
+
+
     def test_naked_twins2(self):
         self.assertTrue(solution.naked_twins(self.before_naked_twins_2) in self.possible_solutions_2,
                         "Your naked_twins function produced an unexpected board.")

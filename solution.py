@@ -79,6 +79,50 @@ def naked_twins(values):
     return values
 
 
+def naked_tuples(values):
+    """Eliminate values using the naked tuples strategy -- a generalization of
+    naked twins: if there are n boxes in a unit, each of which have the same
+    n choices, then remove those choices from the rest of the unit. Per
+    https://discussions.udacity.com/t/generalizing-naked-twins-for-n-boxes/214559
+
+    Parameters
+    ----------
+    values(dict)
+        a dictionary of the form {'box_name': '123456789', ...}
+
+    Returns
+    -------
+    dict
+        The values dictionary with the naked tuples eliminated from peers
+    """
+    for unit in unitlist:
+        # map strings of choices to list of boxes with that string
+        tuple_dict = {}
+        for box in unit:
+            options = values[box]
+            if len(options) < 2 or len(options) > 8:
+                continue
+            if options in tuple_dict:
+                # Append it to the list of boxes
+                tuple_dict[options].append(box)
+            else:
+                # Start a single element list
+                tuple_dict[options] = [box]
+        for tuple_dict_str, tuple_dict_boxes in tuple_dict.items():
+            # Don't need to check for length >=2 and <= 8; already done above
+            # Can act on all cases where len(tuple_dict_str) is equal to
+            # len(tuple_dict_boxes)
+            # Remove from rest of unit
+            if len(tuple_dict_str) == len(tuple_dict_boxes):
+                for box in unit:
+                    if box in tuple_dict_boxes:
+                        continue
+                    values[box] = "".join([
+                        x for x in values[box] if x not in tuple_dict_str
+                    ])
+    return values
+
+
 def eliminate(values):
     """Apply the eliminate strategy to a Sudoku puzzle
 
@@ -168,7 +212,7 @@ def reduce_puzzle(values):
         # Reduce by use of Eliminate and Only Choice strategy
         values = eliminate(values)
         values = only_choice(values)
-        values = naked_twins(values)
+        values = naked_tuples(values)
 
         # Check how many boxes have a determined value, to compare
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
